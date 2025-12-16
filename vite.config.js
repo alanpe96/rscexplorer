@@ -60,7 +60,7 @@ function serveEmbedPlugin() {
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
         if (req.url === "/embed.js") {
-          req.url = "/src/embed.js";
+          req.url = "/src/embed.ts";
         }
         next();
       });
@@ -85,7 +85,7 @@ export default defineConfig(({ mode }) => ({
       input: {
         main: resolve(__dirname, "index.html"),
         embed: resolve(__dirname, "embed.html"),
-        "embed-js": resolve(__dirname, "src/embed.js"),
+        "embed-js": resolve(__dirname, "src/embed.ts"),
       },
       output: {
         entryFileNames: (chunkInfo) => {
