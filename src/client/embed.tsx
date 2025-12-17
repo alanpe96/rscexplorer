@@ -1,9 +1,5 @@
-// Must be first - shims webpack globals for react-server-dom-webpack
-import "./webpack-shim.ts";
-
-import "./byte-stream-polyfill.ts";
-import "web-streams-polyfill/polyfill";
-import "text-encoding";
+import "../shared/webpack-shim.ts";
+import "../shared/polyfill.ts";
 
 import React, { useState, useEffect } from "react";
 import { createRoot } from "react-dom/client";

@@ -7,7 +7,7 @@ import {
   evaluateClientModule,
   type CallServerCallback,
 } from "../runtime/index.ts";
-import { ServerWorker } from "../server-worker.ts";
+import { WorkerClient, encodeArgs } from "../worker-client.ts";
 import {
   parseClientModule,
   parseServerActions,
@@ -35,8 +35,8 @@ export function Workspace({
 }: WorkspaceProps): React.ReactElement {
   const [serverCode, setServerCode] = useState(initialServerCode);
   const [clientCode, setClientCode] = useState(initialClientCode);
-  const [serverWorker] = useState(() => new ServerWorker());
   const [timeline] = useState(() => new Timeline());
+  const [workerClient, setWorkerClient] = useState<WorkerClient | null>(null);
   const [callServerRef] = useState<CallServerRef>({ current: null });
 
   const snapshot = useSyncExternalStore(timeline.subscribe, timeline.getSnapshot);
@@ -67,8 +67,12 @@ export function Workspace({
 
   const handleAddRawAction = useCallback(
     async (actionName: string, rawPayload: string) => {
+      if (!workerClient) throw new Error("Worker not initialized");
       try {
-        const responseRaw = await serverWorker.callActionRaw(actionName, rawPayload);
+        const responseRaw = await workerClient.callAction(actionName, {
+          type: "formdata",
+          data: rawPayload,
+        });
         const streamOptions = callServerRef.current ? { callServer: callServerRef.current } : {};
         const stream = new SteppableStream(responseRaw, streamOptions);
         await stream.waitForBuffer();
@@ -77,11 +81,12 @@ export function Workspace({
         console.error("[raw action] Failed:", err);
       }
     },
-    [serverWorker, timeline, callServerRef],
+    [workerClient, timeline, callServerRef],
   );
 
   const compile = useCallback(
     async (sCode: string, cCode: string) => {
+      if (!workerClient) throw new Error("Worker not initialized");
       try {
         setError(null);
         timeline.clear();
@@ -96,11 +101,7 @@ export function Workspace({
         const compiledServer = compileToCommonJS(sCode);
         setAvailableActions(actionNames);
 
-        await serverWorker.deploy({
-          compiledCode: compiledServer,
-          manifest,
-          actionNames,
-        });
+        await workerClient.deploy(compiledServer, manifest, actionNames);
 
         const callServer: CallServerCallback | null =
           actionNames.length > 0
@@ -114,7 +115,10 @@ export function Workspace({
                         encodedArgs as unknown as Record<string, string>,
                       ).toString();
 
-                const responseRaw = await serverWorker.callAction(actionName, encodedArgs);
+                const responseRaw = await workerClient.callAction(
+                  actionName,
+                  encodeArgs(encodedArgs),
+                );
                 const stream = new SteppableStream(responseRaw, {
                   callServer: callServer as CallServerCallback,
                 });
@@ -126,7 +130,7 @@ export function Workspace({
 
         callServerRef.current = callServer;
 
-        const renderRaw = await serverWorker.render();
+        const renderRaw = await workerClient.render();
         const renderStreamOptions = callServer ? { callServer } : {};
         const renderStream = new SteppableStream(renderRaw, renderStreamOptions);
         await renderStream.waitForBuffer();
@@ -140,7 +144,7 @@ export function Workspace({
         setClientModuleReady(false);
       }
     },
-    [timeline, serverWorker, callServerRef],
+    [timeline, workerClient, callServerRef],
   );
 
   const handleReset = useCallback(() => {
@@ -157,8 +161,11 @@ export function Workspace({
   }, [serverCode, clientCode, compile]);
 
   useEffect(() => {
-    return () => serverWorker.terminate();
-  }, [serverWorker]);
+    const client = new WorkerClient();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setWorkerClient(client);
+    return () => client.terminate();
+  }, []);
 
   return (
     <main>
