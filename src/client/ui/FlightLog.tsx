@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useTransition } from "react";
 import { FlightTreeView } from "./TreeView.tsx";
 import { Select } from "./Select.tsx";
 import type { EntryView } from "../runtime/index.ts";
@@ -79,11 +79,14 @@ function FlightLogEntry({
   cursor,
   onDelete,
 }: FlightLogEntryProps): React.ReactElement {
-  const modifierClass = entry.isActive
-    ? "FlightLog-entry--active"
-    : entry.isDone
-      ? "FlightLog-entry--done"
-      : "FlightLog-entry--pending";
+  const hasError = entry.error !== null;
+  const modifierClass = hasError
+    ? "FlightLog-entry--error"
+    : entry.isActive
+      ? "FlightLog-entry--active"
+      : entry.isDone
+        ? "FlightLog-entry--done"
+        : "FlightLog-entry--pending";
 
   return (
     <div className={`FlightLog-entry ${modifierClass}`} data-testid="flight-entry">
@@ -109,7 +112,13 @@ function FlightLogEntry({
           <pre className="FlightLog-entry-requestArgs">{entry.args}</pre>
         </div>
       )}
-      <RenderLogView entry={entry} cursor={cursor} />
+      {hasError ? (
+        <div className="FlightLog-entry-error" data-testid="flight-entry-error">
+          <pre className="FlightLog-entry-errorMessage">{entry.error!.message}</pre>
+        </div>
+      ) : (
+        <RenderLogView entry={entry} cursor={cursor} />
+      )}
     </div>
   );
 }
@@ -118,7 +127,7 @@ type FlightLogProps = {
   entries: EntryView[];
   cursor: number;
   availableActions: string[];
-  onAddRawAction: (actionName: string, rawPayload: string) => void;
+  onAddRawAction: (actionName: string, rawPayload: string) => Promise<void>;
   onDeleteEntry: (index: number) => void;
 };
 
@@ -133,13 +142,22 @@ export function FlightLog({
   const [showRawInput, setShowRawInput] = useState(false);
   const [selectedAction, setSelectedAction] = useState("");
   const [rawPayload, setRawPayload] = useState("");
+  const [isPending, startTransition] = useTransition();
 
   const handleAddRaw = (): void => {
     if (rawPayload.trim()) {
-      onAddRawAction(selectedAction, rawPayload);
-      setSelectedAction(availableActions[0] ?? "");
-      setRawPayload("");
-      setShowRawInput(false);
+      startTransition(async () => {
+        try {
+          await onAddRawAction(selectedAction, rawPayload);
+        } catch {
+          // Error entry added to timeline
+        }
+        startTransition(() => {
+          setSelectedAction(availableActions[0] ?? "");
+          setRawPayload("");
+          setShowRawInput(false);
+        });
+      });
     }
   };
 
@@ -164,7 +182,11 @@ export function FlightLog({
       {availableActions.length > 0 &&
         (showRawInput ? (
           <div className="FlightLog-rawForm">
-            <Select value={selectedAction} onChange={(e) => setSelectedAction(e.target.value)}>
+            <Select
+              value={selectedAction}
+              onChange={(e) => setSelectedAction(e.target.value)}
+              disabled={isPending}
+            >
               {availableActions.map((action) => (
                 <option key={action} value={action}>
                   {action}
@@ -177,18 +199,20 @@ export function FlightLog({
               onChange={(e) => setRawPayload(e.target.value)}
               className="FlightLog-rawForm-textarea"
               rows={6}
+              disabled={isPending}
             />
             <div className="FlightLog-rawForm-buttons">
               <button
                 className="FlightLog-rawForm-submitBtn"
                 onClick={handleAddRaw}
-                disabled={!rawPayload.trim()}
+                disabled={!rawPayload.trim() || isPending}
               >
-                Add
+                {isPending ? "Adding..." : "Add"}
               </button>
               <button
                 className="FlightLog-rawForm-cancelBtn"
                 onClick={() => setShowRawInput(false)}
+                disabled={isPending}
               >
                 Cancel
               </button>

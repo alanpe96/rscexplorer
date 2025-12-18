@@ -105,10 +105,14 @@ function deploy(
 }
 export type Deploy = typeof deploy;
 
+const renderOptions = {
+  onError: () => "Switch to dev mode (top right) to see the full error.",
+};
+
 function render(): ReadableStream<Uint8Array> {
   if (!deployed) throw new Error("No code deployed");
   const App = deployed.module.default as React.ComponentType;
-  return renderToReadableStream(React.createElement(App), deployed.manifest);
+  return renderToReadableStream(React.createElement(App), deployed.manifest, renderOptions);
 }
 export type Render = typeof render;
 
@@ -136,7 +140,7 @@ async function callAction(
   const args = Array.isArray(decoded) ? decoded : [decoded];
   const result = await actionFn(...args);
 
-  return renderToReadableStream(result, deployed.manifest);
+  return renderToReadableStream(result, deployed.manifest, renderOptions);
 }
 export type CallAction = typeof callAction;
 

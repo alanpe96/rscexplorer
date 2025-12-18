@@ -84,6 +84,10 @@
   opacity: 0.4;
 }
 
+.FlightLog-entry--error {
+  border-left-color: #e57373;
+}
+
 .FlightLog-entry-header {
   display: flex;
   align-items: center;
@@ -143,6 +147,22 @@
   color: #81c784;
   white-space: pre-wrap;
   word-break: break-all;
+}
+
+/* Error display */
+
+.FlightLog-entry-error {
+  padding: 8px 10px;
+}
+
+.FlightLog-entry-errorMessage {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.4;
+  color: #e57373;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 /* FlightLog-renderView */

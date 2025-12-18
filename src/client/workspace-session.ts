@@ -86,12 +86,27 @@ export class WorkspaceSession {
     args: EncodedArgs,
     argsDisplay: string,
   ): Promise<SteppableStream> {
-    const responseRaw = await this.worker.callAction(actionName, args);
-    const stream = new SteppableStream(responseRaw, {
-      callServer: this.callServer.bind(this),
-    });
-    await stream.waitForBuffer();
+    let stream: SteppableStream;
+    try {
+      const responseRaw = await this.worker.callAction(actionName, args);
+      stream = new SteppableStream(responseRaw, {
+        callServer: this.callServer.bind(this),
+      });
+      await stream.waitForBuffer();
+    } catch (err) {
+      let error = err instanceof Error ? err : new Error(String(err));
+      if (error.message === "Connection closed.") {
+        error = new Error(
+          "Connection closed.\n\nThis usually means React couldn't parse the request payload. " +
+            "Try triggering a real action first and copying its payload format.",
+        );
+      }
+      stream = SteppableStream.fromError(error);
+    }
     this.timeline.addAction(actionName, argsDisplay, stream);
+    if (stream.error) {
+      throw stream.error;
+    }
     return stream;
   }
 

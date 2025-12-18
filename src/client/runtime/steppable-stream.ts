@@ -28,6 +28,7 @@ export class SteppableStream {
   releasedCount = 0;
   buffered = false;
   closed = false;
+  error: Error | null = null;
   release: (count: number) => void;
   flightPromise: Thenable<unknown>;
   bufferPromise: Promise<void>;
@@ -83,6 +84,8 @@ export class SteppableStream {
 
       partial += decoder.decode();
       if (partial.trim()) this.rows.push(partial);
+    } catch (err) {
+      this.error = err instanceof Error ? err : new Error(String(err));
     } finally {
       this.buffered = true;
     }
@@ -90,5 +93,22 @@ export class SteppableStream {
 
   async waitForBuffer(): Promise<void> {
     await this.bufferPromise;
+    if (this.error) {
+      throw this.error;
+    }
+  }
+
+  static fromError(error: Error): SteppableStream {
+    const emptyStream = new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.close();
+      },
+    });
+    const stream = new SteppableStream(emptyStream);
+    stream.error = error;
+    stream.buffered = true;
+    // Override flightPromise to reject so client transitions complete
+    stream.flightPromise = Promise.reject(error);
+    return stream;
   }
 }

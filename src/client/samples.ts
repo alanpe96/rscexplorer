@@ -576,6 +576,43 @@ function renderValue(v) {
   return String(v)
 }`,
   },
+  actionerror: {
+    name: "Action Error",
+    server: `import { Button } from './client'
+
+export default function App() {
+  return (
+    <div>
+      <h1>Action Error</h1>
+      <Button failAction={failAction} />
+    </div>
+  )
+}
+
+async function failAction() {
+  'use server'
+  throw new Error('Action failed intentionally')
+}`,
+    client: `'use client'
+
+import { useTransition } from 'react'
+
+export function Button({ failAction }) {
+  const [isPending, startTransition] = useTransition()
+
+  const handleClick = () => {
+    startTransition(async () => {
+      await failAction()
+    })
+  }
+
+  return (
+    <button onClick={handleClick} disabled={isPending}>
+      {isPending ? 'Running...' : 'Trigger Failing Action'}
+    </button>
+  )
+}`,
+  },
   cve: {
     name: "CVE-2025-55182",
     server: `import { Instructions } from './client'

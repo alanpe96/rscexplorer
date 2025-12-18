@@ -10,6 +10,7 @@ export type EntryView = {
   args?: string;
   rows: string[];
   flightPromise: Thenable<unknown> | undefined;
+  error: Error | null;
   chunkStart: number;
   chunkCount: number;
   canDelete: boolean;
@@ -57,6 +58,7 @@ export class Timeline {
       const base = {
         rows: entry.stream.rows,
         flightPromise: entry.stream.flightPromise,
+        error: entry.stream.error,
         chunkStart,
         chunkCount,
         canDelete: this.cursor <= chunkStart,
