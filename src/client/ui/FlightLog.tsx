@@ -145,7 +145,7 @@ export function FlightLog({
   if (entries.length === 0) {
     return (
       <div className="FlightLog-output">
-        <span className="FlightLog-empty FlightLog-empty--waiting">Compiling</span>
+        <span className="FlightLog-empty FlightLog-empty--waiting">Loading</span>
       </div>
     );
   }

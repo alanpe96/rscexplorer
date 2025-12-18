@@ -68,8 +68,43 @@ function serveEmbedPlugin() {
   };
 }
 
+function preloadCodemirrorPlugin() {
+  return {
+    name: "preload-codemirror",
+    transformIndexHtml(html, { bundle, filename }) {
+      if (!bundle) return; // dev mode
+      const tags = [];
+
+      const cmChunk = Object.keys(bundle).find((k) => k.includes("codemirror"));
+      if (cmChunk) {
+        tags.push({
+          tag: "link",
+          attrs: { rel: "modulepreload", href: "/" + cmChunk },
+          injectTo: "head",
+        });
+      }
+
+      // From index.html, prefetch embed resources for the iframe
+      if (filename.endsWith("index.html")) {
+        const embedChunk = Object.keys(bundle).find(
+          (k) => k.startsWith("assets/embed") && k.endsWith(".js"),
+        );
+        if (embedChunk) {
+          tags.push({
+            tag: "link",
+            attrs: { rel: "preload", href: "/" + embedChunk, as: "script", crossorigin: true },
+            injectTo: "head",
+          });
+        }
+      }
+
+      return tags;
+    },
+  };
+}
+
 export default defineConfig(({ mode }) => ({
-  plugins: [react(), rolldownWorkerPlugin(), serveEmbedPlugin()],
+  plugins: [react(), rolldownWorkerPlugin(), serveEmbedPlugin(), preloadCodemirrorPlugin()],
   server: { port: 3333 },
   define: {
     "process.env.NODE_ENV": JSON.stringify(mode === "development" ? "development" : "production"),

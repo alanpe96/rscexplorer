@@ -24,12 +24,19 @@ export function Workspace({
 
   useEffect(() => {
     const abort = new AbortController();
+    const timeoutId = setTimeout(() => {
+      setSession(null);
+    }, 1000);
     WorkspaceSession.create(serverCode, clientCode, abort.signal).then((nextSession) => {
       if (!abort.signal.aborted) {
+        clearTimeout(timeoutId);
         setSession(nextSession);
       }
     });
-    return () => abort.abort();
+    return () => {
+      clearTimeout(timeoutId);
+      abort.abort();
+    };
   }, [serverCode, clientCode, resetKey]);
 
   function handleServerChange(code: string) {
@@ -68,7 +75,7 @@ export function Workspace({
           {isLoading ? (
             <div className="Workspace-loadingOutput">
               <span className="Workspace-loadingEmpty Workspace-loadingEmpty--waiting">
-                Compiling
+                Loading
               </span>
             </div>
           ) : isError ? (

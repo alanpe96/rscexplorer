@@ -27,6 +27,7 @@
 type EmbedOptions = {
   server: string;
   client: string;
+  seamless?: boolean;
 };
 
 type EmbedControl = {
@@ -66,7 +67,7 @@ const getEmbedUrl = (): string => {
  */
 export function mount(
   container: string | HTMLElement,
-  { server, client }: EmbedOptions,
+  { server, client, seamless }: EmbedOptions,
 ): EmbedControl {
   const el =
     typeof container === "string" ? document.querySelector<HTMLElement>(container) : container;
@@ -75,8 +76,13 @@ export function mount(
     throw new Error(`RSC Explorer: Container not found: ${container}`);
   }
 
+  const embedUrl = new URL(getEmbedUrl());
+  if (seamless) {
+    embedUrl.searchParams.set("seamless", "1");
+  }
+
   const iframe = document.createElement("iframe");
-  iframe.src = getEmbedUrl();
+  iframe.src = embedUrl.href;
   iframe.style.cssText =
     "width: 100%; height: 100%; border: 1px solid #e0e0e0; border-radius: 8px;";
 

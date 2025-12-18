@@ -21,3 +21,31 @@
 .CodeEditor .cm-editor .cm-scroller {
   overflow: auto !important;
 }
+
+/* Fallback textarea styled to match CodeMirror */
+.CodeEditor-fallback {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  padding: 16px 18px;
+  margin: 0;
+  border: none;
+  outline: none;
+  resize: none;
+  background: transparent;
+  color: #b8b8b8;
+  font-family: "SF Mono", "Fira Code", Menlo, monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  caret-color: #79b8ff;
+  white-space: pre;
+  overflow: auto;
+  tab-size: 4;
+  -moz-tab-size: 4;
+  word-wrap: normal;
+  overflow-wrap: normal;
+}

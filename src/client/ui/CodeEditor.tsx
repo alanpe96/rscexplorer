@@ -1,45 +1,12 @@
-import React, { useRef, useEffect, useEffectEvent, useState } from "react";
-import { EditorView, keymap } from "@codemirror/view";
-import { javascript } from "@codemirror/lang-javascript";
-import { syntaxHighlighting, HighlightStyle } from "@codemirror/language";
-import { tags } from "@lezer/highlight";
-import { history, historyKeymap, defaultKeymap } from "@codemirror/commands";
-import { closeBrackets, closeBracketsKeymap } from "@codemirror/autocomplete";
+import React, { useRef, useLayoutEffect, useEffectEvent, useState } from "react";
 import { Pane } from "./Pane.tsx";
 import "./CodeEditor.css";
 
-const highlightStyle = HighlightStyle.define([
-  { tag: tags.keyword, color: "#c678dd" },
-  { tag: tags.string, color: "#98c379" },
-  { tag: tags.number, color: "#d19a66" },
-  { tag: tags.comment, color: "#5c6370", fontStyle: "italic" },
-  { tag: tags.function(tags.variableName), color: "#61afef" },
-  { tag: tags.typeName, color: "#e5c07b" },
-  { tag: [tags.tagName, tags.angleBracket], color: "#e06c75" },
-  { tag: tags.attributeName, color: "#d19a66" },
-  { tag: tags.propertyName, color: "#abb2bf" },
-]);
-
-const minimalTheme = EditorView.theme(
-  {
-    "&": { height: "100%", fontSize: "13px", backgroundColor: "transparent" },
-    ".cm-scroller": {
-      overflow: "auto",
-      fontFamily: "'SF Mono', 'Fira Code', Menlo, monospace",
-      lineHeight: "1.6",
-      padding: "12px",
-    },
-    ".cm-content": { caretColor: "#79b8ff" },
-    ".cm-cursor": { borderLeftColor: "#79b8ff", borderLeftWidth: "2px" },
-    ".cm-selectionBackground, &.cm-focused .cm-selectionBackground": {
-      backgroundColor: "#3a3a3a",
-    },
-    ".cm-activeLine": { backgroundColor: "transparent" },
-    ".cm-gutters": { display: "none" },
-    ".cm-line": { color: "#b8b8b8" },
-  },
-  { dark: true },
-);
+let cmModule: typeof import("./codemirror.ts") | null = null;
+const cmModulePromise = import("./codemirror.ts").then((mod) => {
+  cmModule = mod;
+  return mod;
+});
 
 type CodeEditorProps = {
   defaultValue: string;
@@ -49,41 +16,56 @@ type CodeEditorProps = {
 
 export function CodeEditor({ defaultValue, onChange, label }: CodeEditorProps): React.ReactElement {
   const [initialDefaultValue] = useState(defaultValue);
+  const [cmLoaded, setCmLoaded] = useState(cmModule !== null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const onEditorChange = useEffectEvent((doc: string) => {
     onChange(doc);
   });
 
-  useEffect(() => {
-    if (!containerRef.current) return;
+  useLayoutEffect(() => {
+    let editorHandle: { destroy: () => void } | null = null;
+    let destroyed = false;
 
-    const onChangeExtension = EditorView.updateListener.of((update) => {
-      if (update.docChanged) {
-        onEditorChange(update.state.doc.toString());
+    function initEditor(cm: typeof import("./codemirror.ts")) {
+      if (!destroyed) {
+        editorHandle = cm.createEditor(
+          containerRef.current!,
+          textareaRef.current?.value ?? initialDefaultValue,
+          onEditorChange,
+        );
+        setCmLoaded(true);
       }
-    });
+    }
 
-    const editor = new EditorView({
-      doc: initialDefaultValue,
-      extensions: [
-        minimalTheme,
-        syntaxHighlighting(highlightStyle),
-        javascript({ jsx: true }),
-        history(),
-        closeBrackets(),
-        keymap.of([...defaultKeymap, ...historyKeymap, ...closeBracketsKeymap]),
-        onChangeExtension,
-      ],
-      parent: containerRef.current,
-    });
+    if (cmModule) {
+      initEditor(cmModule);
+    } else {
+      cmModulePromise.then(initEditor);
+    }
 
-    return () => editor.destroy();
+    return () => {
+      destroyed = true;
+      editorHandle?.destroy();
+    };
   }, [initialDefaultValue]);
 
   return (
     <Pane label={label}>
-      <div className="CodeEditor" ref={containerRef} />
+      <div className="CodeEditor" ref={containerRef}>
+        {!cmLoaded && (
+          <textarea
+            ref={textareaRef}
+            className="CodeEditor-fallback"
+            defaultValue={initialDefaultValue}
+            onChange={(e) => onChange(e.target.value)}
+            spellCheck={false}
+            autoCapitalize="off"
+            autoCorrect="off"
+          />
+        )}
+      </div>
     </Pane>
   );
 }

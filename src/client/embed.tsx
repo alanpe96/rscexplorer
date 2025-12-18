@@ -5,5 +5,5 @@ import { createRoot } from "react-dom/client";
 import { EmbedApp } from "./ui/EmbedApp.tsx";
 
 const container = document.getElementById("embed-root")!;
-const root = createRoot(container);
+const root = createRoot(container!);
 root.render(<EmbedApp />);

@@ -102,7 +102,7 @@ export function LivePreview({
 
   let statusText = "";
   if (isLoading) {
-    statusText = "Compiling";
+    statusText = "Loading";
   } else if (isAtStart) {
     statusText = "Ready";
   } else if (isAtEnd) {
@@ -182,7 +182,7 @@ export function LivePreview({
       </div>
       <div className="LivePreview-container">
         {isLoading ? (
-          <span className="LivePreview-empty">Compiling...</span>
+          <span className="LivePreview-empty">Loading...</span>
         ) : showPlaceholder ? (
           <span className="LivePreview-empty">{isAtStart ? "Step to begin..." : "Loading..."}</span>
         ) : flightPromise ? (

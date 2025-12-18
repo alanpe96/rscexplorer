@@ -1,4 +1,4 @@
-import React, { useState, useEffect, type ChangeEvent, type MouseEvent } from "react";
+import React, { useState, useEffect, useRef, type ChangeEvent, type MouseEvent } from "react";
 import { version } from "react";
 import { SAMPLES, type Sample } from "../samples.ts";
 import REACT_VERSIONS from "../../../scripts/versions.json";
@@ -188,14 +188,17 @@ function EmbedModal({ code, onClose }: EmbedModalProps): React.ReactElement {
 export function App(): React.ReactElement {
   const [initialCode] = useState(getInitialCode);
   const [currentSample, setCurrentSample] = useState<string | null>(initialCode.sampleKey);
-  const [workspaceCode, setWorkspaceCode] = useState<CodeState>({
+  const [liveCode, setLiveCode] = useState<CodeState>({
     server: initialCode.server,
     client: initialCode.client,
   });
-  const [liveCode, setLiveCode] = useState<CodeState>(workspaceCode);
   const [showEmbedModal, setShowEmbedModal] = useState(false);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  // Listen for code changes from the embed iframe
+  const [initialEmbedUrl] = useState(
+    () => `embed.html?seamless=1&c=${encodeURIComponent(encodeCode(initialCode))}`,
+  );
+
   useEffect(() => {
     const handleMessage = (event: MessageEvent): void => {
       const data = event.data as { type?: string; code?: CodeState };
@@ -203,17 +206,44 @@ export function App(): React.ReactElement {
         setLiveCode(data.code);
       }
     };
-
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
   }, []);
 
-  // Reset liveCode when workspaceCode changes (e.g., sample switch)
   useEffect(() => {
-    setLiveCode(workspaceCode);
-  }, [workspaceCode]);
+    const handlePopState = (): void => {
+      const newCode = getInitialCode();
+      setLiveCode({ server: newCode.server, client: newCode.client });
+      setCurrentSample(newCode.sampleKey);
+      iframeRef.current?.contentWindow?.postMessage(
+        { type: "rscexplorer:reset", code: { server: newCode.server, client: newCode.client } },
+        "*",
+      );
+    };
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
 
-  const embedUrl = `embed.html?c=${encodeURIComponent(encodeCode(workspaceCode))}`;
+  const handleSampleChange = (e: ChangeEvent<HTMLSelectElement>): void => {
+    const key = e.target.value;
+    if (key && SAMPLES[key]) {
+      const sample = SAMPLES[key] as Sample;
+      const newCode: CodeState = {
+        server: sample.server,
+        client: sample.client,
+      };
+      setCurrentSample(key);
+      setLiveCode(newCode);
+      iframeRef.current?.contentWindow?.postMessage(
+        { type: "rscexplorer:reset", code: newCode },
+        "*",
+      );
+      const url = new URL(window.location.href);
+      url.searchParams.delete("c");
+      url.searchParams.set("s", key);
+      window.history.pushState({}, "", url);
+    }
+  };
 
   const handleSave = (): void => {
     saveToUrl(liveCode.server, liveCode.client);
@@ -224,23 +254,6 @@ export function App(): React.ReactElement {
     ? liveCode.server !== (SAMPLES[currentSample] as Sample).server ||
       liveCode.client !== (SAMPLES[currentSample] as Sample).client
     : liveCode.server !== initialCode.server || liveCode.client !== initialCode.client;
-
-  const handleSampleChange = (e: ChangeEvent<HTMLSelectElement>): void => {
-    const key = e.target.value;
-    if (key && SAMPLES[key]) {
-      const sample = SAMPLES[key] as Sample;
-      const newCode: CodeState = {
-        server: sample.server,
-        client: sample.client,
-      };
-      setWorkspaceCode(newCode);
-      setCurrentSample(key);
-      const url = new URL(window.location.href);
-      url.searchParams.delete("c");
-      url.searchParams.set("s", key);
-      window.history.pushState({}, "", url);
-    }
-  };
 
   return (
     <>
@@ -322,7 +335,11 @@ export function App(): React.ReactElement {
         </div>
         <BuildSwitcher />
       </header>
-      <iframe key={embedUrl} src={embedUrl} style={{ flex: 1, border: "none", width: "100%" }} />
+      <iframe
+        ref={iframeRef}
+        src={initialEmbedUrl}
+        style={{ flex: 1, border: "none", width: "100%" }}
+      />
       {showEmbedModal && <EmbedModal code={liveCode} onClose={() => setShowEmbedModal(false)} />}
     </>
   );

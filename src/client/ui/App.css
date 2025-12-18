@@ -197,6 +197,11 @@
   border-color: #555;
 }
 
+.App-embedModal-textarea::selection {
+  background: rgba(255, 213, 79, 0.3);
+  color: var(--text-bright);
+}
+
 .App-embedModal-tabs {
   display: inline-flex;
   background: var(--bg);
