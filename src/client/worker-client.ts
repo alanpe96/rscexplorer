@@ -1,6 +1,7 @@
 import workerUrl from "../server/worker-server.ts?rolldown-worker";
 import type { Response, EncodedArgs, Deploy, Render, CallAction } from "../server/worker-server.ts";
 import type { ClientManifest } from "../shared/compiler.ts";
+import { polyfillReady } from "../shared/polyfill.ts";
 
 export type { EncodedArgs, ClientManifest };
 
@@ -78,7 +79,7 @@ export class WorkerClient {
   private nextRequestId = 0;
 
   private async request(body: Record<string, unknown>): Promise<ReadableStream<Uint8Array>> {
-    await this.readyPromise;
+    await Promise.all([this.readyPromise, polyfillReady]);
     const requestId = String(this.nextRequestId++);
     let controller!: ReadableStreamDefaultController<Uint8Array>;
     const stream = new ReadableStream<Uint8Array>({

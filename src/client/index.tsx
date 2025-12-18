@@ -1,5 +1,4 @@
 import "../shared/webpack-shim.ts";
-import "../shared/polyfill.ts";
 
 import { createRoot } from "react-dom/client";
 import { App } from "./ui/App.tsx";

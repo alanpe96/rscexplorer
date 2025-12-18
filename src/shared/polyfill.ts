@@ -1,6 +1,8 @@
-import { ReadableStream as PolyfillReadableStream } from "web-streams-polyfill";
-
 // Safari doesn't implement ReadableByteStreamController.
-if (typeof globalThis.ReadableByteStreamController === "undefined") {
-  globalThis.ReadableStream = PolyfillReadableStream as typeof ReadableStream;
-}
+// Only load the polyfill when needed.
+export const polyfillReady: Promise<void> =
+  typeof globalThis.ReadableByteStreamController === "undefined"
+    ? import("web-streams-polyfill").then(({ ReadableStream }) => {
+        globalThis.ReadableStream = ReadableStream as typeof globalThis.ReadableStream;
+      })
+    : Promise.resolve();

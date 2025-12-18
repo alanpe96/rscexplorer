@@ -1,7 +1,7 @@
 // Server Worker - RSC server simulation
 
 import "../shared/webpack-shim.ts";
-import "../shared/polyfill.ts";
+import { polyfillReady } from "../shared/polyfill.ts";
 
 import {
   renderToReadableStream,
@@ -165,4 +165,6 @@ self.onmessage = (
   }
 };
 
-self.postMessage({ type: "ready" });
+polyfillReady.then(() => {
+  self.postMessage({ type: "ready" });
+});
