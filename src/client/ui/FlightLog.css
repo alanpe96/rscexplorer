@@ -1,0 +1,319 @@
+/* FlightLog component styles */
+
+.FlightLog {
+  flex: 1;
+  overflow: auto;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.FlightLog-output {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  padding: 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.6;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  background: var(--bg);
+  color: var(--text-dim);
+}
+
+.FlightLog-output--error {
+  color: #e57373;
+}
+
+.FlightLog-empty {
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+.FlightLog-empty--waiting::after {
+  content: "...";
+  animation: flightLogPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes flightLogPulse {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* FlightLogEntry */
+
+.FlightLogEntry {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  transition: all 0.15s ease;
+  border-left: 3px solid #555;
+}
+
+.FlightLogEntry + .FlightLogEntry {
+  margin-top: 12px;
+}
+
+.FlightLogEntry--active {
+  border-left-color: #ffd54f;
+}
+
+.FlightLogEntry--done {
+  border-left-color: #555;
+  opacity: 0.8;
+}
+
+.FlightLogEntry--pending {
+  border-left-color: #333;
+  opacity: 0.4;
+}
+
+.FlightLogEntry-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 10px;
+  font-size: 11px;
+  border-bottom: 1px solid var(--border);
+}
+
+.FlightLogEntry-label {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.FlightLogEntry-headerRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.FlightLogEntry-deleteBtn {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0 4px;
+  line-height: 1;
+  opacity: 0.5;
+  transition:
+    opacity 0.15s,
+    color 0.15s;
+}
+
+.FlightLogEntry-deleteBtn:hover {
+  opacity: 1;
+  color: #e57373;
+}
+
+.FlightLogEntry-request {
+  padding: 8px 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid var(--border);
+}
+
+.FlightLogEntry-requestArgs {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.4;
+  color: #81c784;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* RenderLogView */
+
+.RenderLogView {
+  border-top: 1px solid var(--border);
+  padding: 8px;
+}
+
+.RenderLogView-split {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.RenderLogView-linesWrapper {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  min-height: 150px;
+}
+
+.RenderLogView-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  padding: 6px;
+  background: var(--bg);
+  border-radius: 3px;
+  font-size: 11px;
+  line-height: 1.4;
+  overflow: auto;
+}
+
+.RenderLogView-line {
+  display: block;
+  padding: 6px 8px;
+  margin-bottom: 3px;
+  border-radius: 4px;
+  word-break: break-all;
+  white-space: pre-wrap;
+  border-left: 2px solid transparent;
+  transition: all 0.15s ease;
+}
+
+.RenderLogView-line:last-child {
+  margin-bottom: 0;
+}
+
+.RenderLogView-line--done {
+  color: #999;
+  background: rgba(255, 255, 255, 0.03);
+  border-left-color: #555;
+}
+
+.RenderLogView-line--next {
+  color: #e0e0e0;
+  background: rgba(255, 213, 79, 0.12);
+  border-left-color: #ffd54f;
+}
+
+.RenderLogView-line--pending {
+  color: #444;
+  background: transparent;
+  border-left-color: #333;
+  opacity: 0.4;
+}
+
+.RenderLogView-tree {
+  flex: 1;
+  min-width: 0;
+  border-radius: 4px;
+  overflow: auto;
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+}
+
+.RenderLogView-tree:has(.FlightTreeView) {
+  background: #000;
+}
+
+/* RawActionForm */
+
+.RawActionForm {
+  margin-top: 8px;
+  padding: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.RawActionForm-textarea {
+  width: 100%;
+  padding: 8px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  resize: vertical;
+  min-height: 100px;
+}
+
+.RawActionForm-textarea:focus {
+  outline: none;
+  border-color: #555;
+}
+
+.RawActionForm-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.RawActionForm-submitBtn {
+  padding: 5px 12px;
+  border-radius: 3px;
+  font-size: 11px;
+  cursor: pointer;
+  background: #ffd54f;
+  border: none;
+  color: #000;
+}
+
+.RawActionForm-submitBtn:disabled {
+  background: #555;
+  color: #888;
+  cursor: not-allowed;
+}
+
+.RawActionForm-cancelBtn {
+  padding: 5px 12px;
+  border-radius: 3px;
+  font-size: 11px;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+}
+
+.RawActionForm-cancelBtn:hover {
+  border-color: #555;
+  color: var(--text);
+}
+
+/* AddActionButton */
+
+.AddActionButton-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.AddActionButton {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: var(--border);
+  border: 1px solid #444;
+  border-radius: 50%;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 22px;
+  transition: all 0.15s;
+}
+
+.AddActionButton:hover {
+  background: #3a3a3a;
+  border-color: #666;
+  color: var(--text);
+}
+
+/* Responsive */
+
+@media (max-width: 768px) {
+  .RawActionForm-textarea {
+    font-size: 16px !important;
+  }
+}

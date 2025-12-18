@@ -1,0 +1,65 @@
+/* Shared Select component styles */
+
+.Select {
+  width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")
+      no-repeat right var(--select-chevron-offset, 8px) center / 12px 12px,
+    linear-gradient(to bottom, #333, #2a2a2a);
+  border: 1px solid #555;
+  border-radius: 4px;
+  color: #fff;
+  padding: 5px 28px 5px 10px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.Select:hover {
+  border-color: #666;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23bbb' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")
+      no-repeat right var(--select-chevron-offset, 8px) center / 12px 12px,
+    linear-gradient(to bottom, #3a3a3a, #333);
+}
+
+.Select:focus {
+  outline: none;
+  border-color: #ffd54f;
+}
+
+.Select option {
+  background: #2a2a2a;
+  color: #e0e0e0;
+  padding: 8px;
+  font-size: 13px;
+}
+
+.Select option:hover,
+.Select option:checked {
+  background: #3a3a3a;
+  color: #ffd54f;
+}
+
+/* Responsive */
+
+@media (max-width: 768px) {
+  .Select {
+    --select-chevron-offset: 4px;
+    padding: 4px 20px 4px 6px;
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .Select {
+    --select-chevron-offset: 3px;
+    padding: 3px 18px 3px 5px;
+  }
+}

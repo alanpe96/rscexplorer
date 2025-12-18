@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FlightTreeView } from "./TreeView.tsx";
+import { Select } from "./Select.tsx";
 import type { EntryView } from "../runtime/index.ts";
+import "./FlightLog.css";
 
 function escapeHtml(str: string): string {
   return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -28,31 +30,31 @@ function RenderLogView({ entry, cursor }: RenderLogViewProps): React.ReactElemen
 
   const getLineClass = (i: number): string => {
     const globalChunk = chunkStart + i;
-    if (globalChunk < cursor) return "line-done";
-    if (globalChunk === cursor) return "line-next";
-    return "line-pending";
+    if (globalChunk < cursor) return "RenderLogView-line--done";
+    if (globalChunk === cursor) return "RenderLogView-line--next";
+    return "RenderLogView-line--pending";
   };
 
   const showTree = cursor >= chunkStart;
 
   return (
-    <div className="log-entry-preview">
-      <div className="log-entry-split">
-        <div className="log-entry-flight-lines-wrapper">
-          <pre className="log-entry-flight-lines">
+    <div className="RenderLogView">
+      <div className="RenderLogView-split">
+        <div className="RenderLogView-linesWrapper">
+          <pre className="RenderLogView-lines">
             {rows.map((line, i) => (
               <span
                 key={i}
                 ref={i === nextLineIndex ? activeRef : null}
-                className={`flight-line ${getLineClass(i)}`}
+                className={`RenderLogView-line ${getLineClass(i)}`}
               >
                 {escapeHtml(line)}
               </span>
             ))}
           </pre>
         </div>
-        <div className="log-entry-tree">
-          {showTree && <FlightTreeView flightPromise={flightPromise ?? null} />}
+        <div className="RenderLogView-tree">
+          {showTree && <FlightTreeView flightPromise={flightPromise ?? null} inEntry />}
         </div>
       </div>
     </div>
@@ -72,25 +74,33 @@ function FlightLogEntry({
   cursor,
   onDelete,
 }: FlightLogEntryProps): React.ReactElement {
-  const entryClass = entry.isActive ? "active" : entry.isDone ? "done-entry" : "pending-entry";
+  const modifierClass = entry.isActive
+    ? "FlightLogEntry--active"
+    : entry.isDone
+      ? "FlightLogEntry--done"
+      : "FlightLogEntry--pending";
 
   return (
-    <div className={`log-entry ${entryClass}`}>
-      <div className="log-entry-header">
-        <span className="log-entry-label">
+    <div className={`FlightLogEntry ${modifierClass}`}>
+      <div className="FlightLogEntry-header">
+        <span className="FlightLogEntry-label">
           {entry.type === "render" ? "Render" : `Action: ${entry.name}`}
         </span>
-        <span className="log-entry-header-right">
+        <span className="FlightLogEntry-headerRight">
           {entry.canDelete && (
-            <button className="delete-entry-btn" onClick={() => onDelete(index)} title="Delete">
+            <button
+              className="FlightLogEntry-deleteBtn"
+              onClick={() => onDelete(index)}
+              title="Delete"
+            >
               ×
             </button>
           )}
         </span>
       </div>
       {entry.type === "action" && entry.args && (
-        <div className="log-entry-request">
-          <pre className="log-entry-request-args">{entry.args}</pre>
+        <div className="FlightLogEntry-request">
+          <pre className="FlightLogEntry-requestArgs">{entry.args}</pre>
         </div>
       )}
       <RenderLogView entry={entry} cursor={cursor} />
@@ -134,48 +144,50 @@ export function FlightLog({
 
   if (entries.length === 0) {
     return (
-      <div className="flight-output">
-        <span className="empty waiting-dots">Compiling</span>
+      <div className="FlightLog-output">
+        <span className="FlightLog-empty FlightLog-empty--waiting">Compiling</span>
       </div>
     );
   }
 
   return (
-    <div className="flight-log" ref={logRef}>
+    <div className="FlightLog" ref={logRef}>
       {entries.map((entry, i) => (
         <FlightLogEntry key={i} entry={entry} index={i} cursor={cursor} onDelete={onDeleteEntry} />
       ))}
       {availableActions.length > 0 &&
         (showRawInput ? (
-          <div className="raw-input-form">
-            <select
-              value={selectedAction}
-              onChange={(e) => setSelectedAction(e.target.value)}
-              className="raw-input-action"
-            >
+          <div className="RawActionForm">
+            <Select value={selectedAction} onChange={(e) => setSelectedAction(e.target.value)}>
               {availableActions.map((action) => (
                 <option key={action} value={action}>
                   {action}
                 </option>
               ))}
-            </select>
+            </Select>
             <textarea
               placeholder="Paste a request payload from a real action"
               value={rawPayload}
               onChange={(e) => setRawPayload(e.target.value)}
-              className="raw-input-payload"
+              className="RawActionForm-textarea"
               rows={6}
             />
-            <div className="raw-input-buttons">
-              <button onClick={handleAddRaw} disabled={!rawPayload.trim()}>
+            <div className="RawActionForm-buttons">
+              <button
+                className="RawActionForm-submitBtn"
+                onClick={handleAddRaw}
+                disabled={!rawPayload.trim()}
+              >
                 Add
               </button>
-              <button onClick={() => setShowRawInput(false)}>Cancel</button>
+              <button className="RawActionForm-cancelBtn" onClick={() => setShowRawInput(false)}>
+                Cancel
+              </button>
             </div>
           </div>
         ) : (
-          <div className="add-raw-btn-wrapper">
-            <button className="add-raw-btn" onClick={handleShowRawInput} title="Add action">
+          <div className="AddActionButton-wrapper">
+            <button className="AddActionButton" onClick={handleShowRawInput} title="Add action">
               +
             </button>
           </div>

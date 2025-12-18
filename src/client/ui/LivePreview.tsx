@@ -1,5 +1,6 @@
 import React, { Suspense, Component, useState, useEffect, type ReactNode } from "react";
 import type { EntryView, Thenable } from "../runtime/index.ts";
+import "./LivePreview.css";
 
 type PreviewErrorBoundaryProps = {
   children: ReactNode;
@@ -22,7 +23,7 @@ class PreviewErrorBoundary extends Component<PreviewErrorBoundaryProps, PreviewE
   render(): ReactNode {
     if (this.state.error) {
       return (
-        <span className="empty error">
+        <span className="LivePreview-empty LivePreview-empty--error">
           Error: {this.state.error.message || String(this.state.error)}
         </span>
       );
@@ -106,17 +107,22 @@ export function LivePreview({
   }
 
   return (
-    <div className="pane preview-pane">
-      <div className="pane-header">preview</div>
-      <div className="playback-container">
-        <div className="playback-controls">
-          <button className="control-btn" onClick={handleReset} disabled={isAtStart} title="Reset">
+    <div className="Workspace-pane Workspace-pane--preview">
+      <div className="Workspace-paneHeader">preview</div>
+      <div className="LivePreview-playback">
+        <div className="LivePreview-controls">
+          <button
+            className="LivePreview-controlBtn"
+            onClick={handleReset}
+            disabled={isAtStart}
+            title="Reset"
+          >
             <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
               <path d="M8 1a7 7 0 1 1-7 7h1.5a5.5 5.5 0 1 0 1.6-3.9L6 6H1V1l1.6 1.6A7 7 0 0 1 8 1z" />
             </svg>
           </button>
           <button
-            className={`control-btn play-btn${isPlaying ? " playing" : ""}`}
+            className={`LivePreview-controlBtn${isPlaying ? " LivePreview-controlBtn--playing" : ""}`}
             onClick={handlePlayPause}
             disabled={isAtEnd}
             title={isPlaying ? "Pause" : "Play"}
@@ -132,7 +138,7 @@ export function LivePreview({
             )}
           </button>
           <button
-            className={`control-btn ${!isAtEnd ? "step-btn" : ""}`}
+            className={`LivePreview-controlBtn${!isAtEnd ? " LivePreview-controlBtn--step" : ""}`}
             onClick={handleStep}
             disabled={isAtEnd}
             title="Step forward"
@@ -149,7 +155,7 @@ export function LivePreview({
             </svg>
           </button>
           <button
-            className="control-btn"
+            className="LivePreview-controlBtn"
             onClick={handleSkip}
             disabled={isAtEnd}
             title="Skip to end"
@@ -166,16 +172,16 @@ export function LivePreview({
           value={cursor}
           onChange={() => {}}
           disabled
-          className="step-slider"
+          className="LivePreview-slider"
         />
-        <span className="step-info">{statusText}</span>
+        <span className="LivePreview-stepInfo">{statusText}</span>
       </div>
-      <div className="preview-container">
+      <div className="LivePreview-container">
         {showPlaceholder ? (
-          <span className="empty">{isAtStart ? "Step to begin..." : "Loading..."}</span>
+          <span className="LivePreview-empty">{isAtStart ? "Step to begin..." : "Loading..."}</span>
         ) : flightPromise ? (
           <PreviewErrorBoundary>
-            <Suspense fallback={<span className="empty">Loading...</span>}>
+            <Suspense fallback={<span className="LivePreview-empty">Loading...</span>}>
               <StreamingContent streamPromise={flightPromise} />
             </Suspense>
           </PreviewErrorBoundary>

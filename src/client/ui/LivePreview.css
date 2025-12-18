@@ -1,0 +1,219 @@
+/* LivePreview component styles */
+
+.LivePreview-playback {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.LivePreview-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.LivePreview-controlBtn {
+  background: transparent;
+  border: none;
+  color: var(--text);
+  width: 30px;
+  height: 30px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.1s;
+}
+
+.LivePreview-controlBtn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.LivePreview-controlBtn:hover:not(:disabled) {
+  background: var(--border);
+  color: var(--text-bright);
+}
+
+.LivePreview-controlBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.LivePreview-controlBtn--playing {
+  color: #ffd54f;
+}
+
+.LivePreview-controlBtn--step {
+  background: #ffd54f;
+  color: #000;
+  animation: livePreviewPulseStep 1.5s ease-in-out infinite;
+}
+
+.LivePreview-controlBtn--step:hover:not(:disabled) {
+  background: #ffe566;
+  color: #000;
+  animation: none;
+}
+
+.LivePreview-controlBtn--step:disabled {
+  background: transparent;
+  color: var(--text);
+  animation: none;
+}
+
+@keyframes livePreviewPulseStep {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.LivePreview-slider {
+  flex: 1;
+  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--border);
+  border-radius: 2px;
+  outline: none;
+}
+
+.LivePreview-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  background: #ffd54f;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+
+.LivePreview-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: #ffd54f;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+
+.LivePreview-slider:disabled {
+  opacity: 0.5;
+}
+
+.LivePreview-stepInfo {
+  font-size: 11px;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  min-width: 60px;
+  text-align: right;
+}
+
+.LivePreview-container {
+  flex: 1;
+  padding: 20px;
+  background: #fff;
+  color: #111;
+  overflow: auto;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.LivePreview-container h1 {
+  font-size: 28px;
+  color: #000;
+  margin: 0 0 16px;
+}
+
+.LivePreview-container h2 {
+  font-size: 22px;
+  color: #000;
+}
+
+.LivePreview-container h3 {
+  font-size: 18px;
+  color: #000;
+}
+
+.LivePreview-container p {
+  color: #111;
+  margin: 8px 0;
+}
+
+.LivePreview-container button {
+  background: #333;
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.LivePreview-container button:hover {
+  background: #444;
+}
+
+.LivePreview-empty {
+  color: #999;
+  font-style: italic;
+}
+
+.LivePreview-empty--error {
+  color: #c0392b;
+}
+
+/* Responsive */
+
+@media (max-width: 768px) {
+  .LivePreview-playback {
+    padding: 6px 8px;
+    gap: 6px;
+  }
+
+  .LivePreview-controls {
+    gap: 2px;
+  }
+
+  .LivePreview-controlBtn {
+    width: 26px;
+    height: 26px;
+  }
+
+  .LivePreview-stepInfo {
+    min-width: 50px;
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .LivePreview-slider,
+  .LivePreview-stepInfo {
+    display: none;
+  }
+
+  .LivePreview-playback {
+    padding: 4px 6px;
+    gap: 4px;
+  }
+
+  .LivePreview-controlBtn {
+    width: 24px;
+    height: 24px;
+  }
+
+  .LivePreview-controlBtn svg {
+    width: 14px;
+    height: 14px;
+  }
+}

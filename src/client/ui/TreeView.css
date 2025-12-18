@@ -1,0 +1,157 @@
+/* TreeView component styles */
+
+.FlightTreeView {
+  flex: 1;
+  min-height: 0;
+  padding: 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.8;
+  overflow: auto;
+  background: var(--bg);
+}
+
+.FlightTreeView--inEntry {
+  padding: 8px;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.FlightTreeView-output {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--text);
+}
+
+/* PendingFallback */
+
+.PendingFallback {
+  display: inline-block;
+  color: #64b5f6;
+  background: rgba(100, 181, 246, 0.15);
+  padding: 2px 8px;
+  border-radius: 10px;
+  border: 1px solid rgba(100, 181, 246, 0.4);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  animation: pendingPulse 2s ease-in-out infinite;
+}
+
+@keyframes pendingPulse {
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* ErrorFallback */
+
+.ErrorFallback {
+  display: inline-block;
+  color: #e57373;
+  background: rgba(229, 115, 115, 0.15);
+  padding: 2px 8px;
+  border-radius: 10px;
+  border: 1px solid rgba(229, 115, 115, 0.4);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+/* JSXValue types */
+
+.JSXValue-null {
+  color: #5c6370;
+  font-style: italic;
+}
+
+.JSXValue-undefined {
+  color: #5c6370;
+  font-style: italic;
+}
+
+.JSXValue-string {
+  color: #98c379;
+}
+
+.JSXValue-number {
+  color: #d19a66;
+}
+
+.JSXValue-boolean {
+  color: #56b6c2;
+}
+
+.JSXValue-symbol {
+  color: #c678dd;
+}
+
+.JSXValue-function {
+  color: #61afef;
+  font-style: italic;
+}
+
+.JSXValue-circular {
+  color: #e57373;
+  font-style: italic;
+}
+
+.JSXValue-date {
+  color: #e5c07b;
+}
+
+.JSXValue-collection {
+  color: var(--text-dim);
+}
+
+.JSXValue-iterator {
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+.JSXValue-stream {
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+.JSXValue-key {
+  color: #61afef;
+}
+
+.JSXValue-empty {
+  color: #5c6370;
+  font-style: italic;
+}
+
+.JSXValue-unknown {
+  color: var(--text-dim);
+}
+
+/* JSXElement */
+
+.JSXElement-tag {
+  color: #e06c75;
+}
+
+.JSXElement-clientTag {
+  color: #c678dd;
+}
+
+.JSXElement-reactTag {
+  color: #e5c07b;
+}
+
+.JSXElement-propName {
+  color: #61afef;
+}
+
+.JSXElement-children {
+  margin-left: 16px;
+  border-left: 1px solid #333;
+  padding-left: 12px;
+}

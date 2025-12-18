@@ -3,6 +3,7 @@ import { WorkspaceSession } from "../workspace-session.ts";
 import { CodeEditor } from "./CodeEditor.tsx";
 import { FlightLog } from "./FlightLog.tsx";
 import { LivePreview } from "./LivePreview.tsx";
+import "./Workspace.css";
 
 type WorkspaceProps = {
   initialServerCode: string;
@@ -47,18 +48,18 @@ export function Workspace({
   }
 
   return (
-    <main>
+    <main className="Workspace">
       <CodeEditor
         label="server"
         defaultValue={serverCode}
         onChange={handleServerChange}
-        className="editor-server"
+        paneClass="Workspace-pane--server"
       />
       <CodeEditor
         label="client"
         defaultValue={clientCode}
         onChange={handleClientChange}
-        className="editor-client"
+        paneClass="Workspace-pane--client"
       />
       {session ? (
         <WorkspaceContent session={session} onReset={reset} key={session.id} />
@@ -72,16 +73,16 @@ export function Workspace({
 function WorkspaceLoading(): React.ReactElement {
   return (
     <>
-      <div className="pane flight-pane">
-        <div className="pane-header">flight</div>
-        <div className="flight-output">
-          <span className="empty waiting-dots">Compiling</span>
+      <div className="Workspace-pane Workspace-pane--flight">
+        <div className="Workspace-paneHeader">flight</div>
+        <div className="WorkspaceLoading-output">
+          <span className="WorkspaceLoading-empty WorkspaceLoading-empty--waiting">Compiling</span>
         </div>
       </div>
-      <div className="pane preview-pane">
-        <div className="pane-header">preview</div>
-        <div className="preview-container">
-          <span className="empty waiting-dots">Compiling</span>
+      <div className="Workspace-pane Workspace-pane--preview">
+        <div className="Workspace-paneHeader">preview</div>
+        <div className="WorkspaceLoading-preview">
+          <span className="WorkspaceLoading-empty WorkspaceLoading-empty--waiting">Compiling</span>
         </div>
       </div>
     </>
@@ -102,14 +103,14 @@ function WorkspaceContent({ session, onReset }: WorkspaceContentProps): React.Re
   if (session.state.status === "error") {
     return (
       <>
-        <div className="pane flight-pane">
-          <div className="pane-header">flight</div>
-          <pre className="flight-output error">{session.state.message}</pre>
+        <div className="Workspace-pane Workspace-pane--flight">
+          <div className="Workspace-paneHeader">flight</div>
+          <pre className="FlightLog-output FlightLog-output--error">{session.state.message}</pre>
         </div>
-        <div className="pane preview-pane">
-          <div className="pane-header">preview</div>
-          <div className="preview-container">
-            <span className="empty error">Compilation error</span>
+        <div className="Workspace-pane Workspace-pane--preview">
+          <div className="Workspace-paneHeader">preview</div>
+          <div className="LivePreview-container">
+            <span className="LivePreview-empty LivePreview-empty--error">Compilation error</span>
           </div>
         </div>
       </>
@@ -120,8 +121,8 @@ function WorkspaceContent({ session, onReset }: WorkspaceContentProps): React.Re
 
   return (
     <>
-      <div className="pane flight-pane">
-        <div className="pane-header">flight</div>
+      <div className="Workspace-pane Workspace-pane--flight">
+        <div className="Workspace-paneHeader">flight</div>
         <FlightLog
           entries={entries}
           cursor={cursor}

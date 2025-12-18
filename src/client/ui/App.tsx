@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect, type ChangeEvent, type MouseEvent }
 import { version } from "react";
 import { SAMPLES, type Sample } from "../samples.ts";
 import REACT_VERSIONS from "../../../scripts/versions.json";
+import { Select } from "./Select.tsx";
+import "./App.css";
 
 const isDev = process.env.NODE_ENV === "development";
 
@@ -25,24 +27,23 @@ function BuildSwitcher(): React.ReactElement {
   };
 
   return (
-    <div className="build-switcher">
-      <label>React</label>
-      <select value={version} onChange={handleVersionChange} disabled={isDisabled}>
-        {(REACT_VERSIONS as string[]).map((v) => (
-          <option key={v} value={v}>
-            {v}
-          </option>
-        ))}
-      </select>
-      <select
-        value={isDev ? "dev" : "prod"}
-        onChange={handleModeChange}
-        className="mode-select"
-        disabled={isDisabled}
-      >
-        <option value="prod">prod</option>
-        <option value="dev">dev</option>
-      </select>
+    <div className="BuildSwitcher">
+      <label className="BuildSwitcher-label">React</label>
+      <div className="BuildSwitcher-version">
+        <Select value={version} onChange={handleVersionChange} disabled={isDisabled}>
+          {(REACT_VERSIONS as string[]).map((v) => (
+            <option key={v} value={v}>
+              {v}
+            </option>
+          ))}
+        </Select>
+      </div>
+      <div className="BuildSwitcher-mode">
+        <Select value={isDev ? "dev" : "prod"} onChange={handleModeChange} disabled={isDisabled}>
+          <option value="prod">prod</option>
+          <option value="dev">dev</option>
+        </Select>
+      </div>
     </div>
   );
 }
@@ -141,25 +142,26 @@ ${code.client}
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" onClick={(e: MouseEvent) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h2>Embed this example</h2>
-          <button className="modal-close" onClick={onClose}>
+    <div className="EmbedModal-overlay" onClick={onClose}>
+      <div className="EmbedModal" onClick={(e: MouseEvent) => e.stopPropagation()}>
+        <div className="EmbedModal-header">
+          <h2 className="EmbedModal-title">Embed this example</h2>
+          <button className="EmbedModal-closeBtn" onClick={onClose}>
             &times;
           </button>
         </div>
-        <div className="modal-body">
-          <p>Copy and paste this code into your HTML:</p>
+        <div className="EmbedModal-body">
+          <p className="EmbedModal-description">Copy and paste this code into your HTML:</p>
           <textarea
             ref={textareaRef}
+            className="EmbedModal-textarea"
             readOnly
             value={embedCode}
             onClick={(e) => (e.target as HTMLTextAreaElement).select()}
           />
         </div>
-        <div className="modal-footer">
-          <button className="copy-btn" onClick={handleCopy}>
+        <div className="EmbedModal-footer">
+          <button className="EmbedModal-copyBtn" onClick={handleCopy}>
             {copied ? "Copied!" : "Copy to clipboard"}
           </button>
         </div>
@@ -245,19 +247,26 @@ export function App(): React.ReactElement {
 
   return (
     <>
-      <header>
-        <h1>RSC Explorer</h1>
-        <div className="example-select-wrapper">
-          <label>Example</label>
-          <select value={currentSample ?? ""} onChange={handleSampleChange}>
-            {!currentSample && <option value="">Custom</option>}
-            {Object.entries(SAMPLES).map(([key, sample]) => (
-              <option key={key} value={key}>
-                {sample.name}
-              </option>
-            ))}
-          </select>
-          <button className="save-btn" onClick={handleSave} disabled={!isDirty} title="Save to URL">
+      <header className="App-header">
+        <h1 className="App-title">RSC Explorer</h1>
+        <div className="ExampleSelect">
+          <label className="ExampleSelect-label">Example</label>
+          <div className="ExampleSelect-selectWrapper">
+            <Select value={currentSample ?? ""} onChange={handleSampleChange}>
+              {!currentSample && <option value="">Custom</option>}
+              {Object.entries(SAMPLES).map(([key, sample]) => (
+                <option key={key} value={key}>
+                  {sample.name}
+                </option>
+              ))}
+            </Select>
+          </div>
+          <button
+            className="ExampleSelect-saveBtn"
+            onClick={handleSave}
+            disabled={!isDirty}
+            title="Save to URL"
+          >
             <svg
               width="16"
               height="16"
@@ -271,7 +280,11 @@ export function App(): React.ReactElement {
               <polyline points="7 3 7 8 15 8" />
             </svg>
           </button>
-          <button className="embed-btn" onClick={() => setShowEmbedModal(true)} title="Embed">
+          <button
+            className="ExampleSelect-embedBtn"
+            onClick={() => setShowEmbedModal(true)}
+            title="Embed"
+          >
             <svg
               width="16"
               height="16"
@@ -285,13 +298,13 @@ export function App(): React.ReactElement {
             </svg>
           </button>
         </div>
-        <div className="header-spacer" />
-        <div className="header-links">
+        <div className="App-headerSpacer" />
+        <div className="App-headerLinks">
           <a
             href="https://github.com/gaearon/rscexplorer"
             target="_blank"
             rel="noopener noreferrer"
-            className="github-link"
+            className="App-headerLink"
             title="View on GitHub"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -302,7 +315,7 @@ export function App(): React.ReactElement {
             href="https://tangled.sh/danabra.mov/rscexplorer"
             target="_blank"
             rel="noopener noreferrer"
-            className="tangled-link"
+            className="App-headerLink App-headerLink--tangled"
             title="View on Tangled"
           >
             <svg width="20" height="20" viewBox="0 0 26 26" fill="currentColor">
