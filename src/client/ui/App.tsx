@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, type ChangeEvent, type MouseEvent } from "react";
+import React, { useState, useEffect, type ChangeEvent, type MouseEvent } from "react";
 import { version } from "react";
 import { SAMPLES, type Sample } from "../samples.ts";
 import REACT_VERSIONS from "../../../scripts/versions.json";
@@ -108,32 +108,35 @@ type CodeState = {
   client: string;
 };
 
+function encodeCode(code: CodeState): string {
+  const json = JSON.stringify({ server: code.server, client: code.client });
+  return btoa(unescape(encodeURIComponent(json)));
+}
+
 type EmbedModalProps = {
   code: CodeState;
   onClose: () => void;
 };
 
 function EmbedModal({ code, onClose }: EmbedModalProps): React.ReactElement {
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [copied, setCopied] = useState(false);
+  const [tab, setTab] = useState<"html" | "jsx">("html");
 
-  const [embedCode] = useState(() => {
-    const base = window.location.origin + window.location.pathname.replace(/\/$/, "");
-    const id = Math.random().toString(36).slice(2, 6);
-    return `<div id="rsc-${id}" style="height: 500px;"></div>
-<script type="module">
-import { mount } from '${base}/embed.js';
+  const base = window.location.origin + window.location.pathname.replace(/\/$/, "");
+  const encoded = encodeCode(code);
+  const embedUrl = `${base}/embed.html?c=${encodeURIComponent(encoded)}`;
 
-mount('#rsc-${id}', {
-  server: \`
-${code.server}
-  \`,
-  client: \`
-${code.client}
-  \`
-});
-</script>`;
-  });
+  const htmlCode = `<iframe
+  style="width: 100%; height: 500px; border: 1px solid #eee; border-radius: 8px;"
+  src="${embedUrl}"
+></iframe>`;
+
+  const jsxCode = `<iframe
+  style={{ width: "100%", height: 500, border: "1px solid #eee", borderRadius: 8 }}
+  src="${embedUrl}"
+/>`;
+
+  const embedCode = tab === "html" ? htmlCode : jsxCode;
 
   const handleCopy = (): void => {
     navigator.clipboard.writeText(embedCode);
@@ -151,9 +154,21 @@ ${code.client}
           </button>
         </div>
         <div className="App-embedModal-body">
-          <p className="App-embedModal-description">Copy and paste this code into your HTML:</p>
+          <div className="App-embedModal-tabs">
+            <button
+              className={`App-embedModal-tab ${tab === "html" ? "App-embedModal-tab--active" : ""}`}
+              onClick={() => setTab("html")}
+            >
+              HTML
+            </button>
+            <button
+              className={`App-embedModal-tab ${tab === "jsx" ? "App-embedModal-tab--active" : ""}`}
+              onClick={() => setTab("jsx")}
+            >
+              JSX
+            </button>
+          </div>
           <textarea
-            ref={textareaRef}
             className="App-embedModal-textarea"
             readOnly
             value={embedCode}
@@ -179,44 +194,26 @@ export function App(): React.ReactElement {
   });
   const [liveCode, setLiveCode] = useState<CodeState>(workspaceCode);
   const [showEmbedModal, setShowEmbedModal] = useState(false);
-  const iframeRef = useRef<HTMLIFrameElement>(null);
 
+  // Listen for code changes from the embed iframe
   useEffect(() => {
     const handleMessage = (event: MessageEvent): void => {
       const data = event.data as { type?: string; code?: CodeState };
-      if (data?.type === "rsc-embed:ready") {
-        iframeRef.current?.contentWindow?.postMessage(
-          {
-            type: "rsc-embed:init",
-            code: workspaceCode,
-            showFullscreen: false,
-          },
-          "*",
-        );
-      }
-      if (data?.type === "rsc-embed:code-changed" && data.code) {
+      if (data?.type === "rscexplorer:edit" && data.code) {
         setLiveCode(data.code);
       }
     };
 
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
+  }, []);
+
+  // Reset liveCode when workspaceCode changes (e.g., sample switch)
+  useEffect(() => {
+    setLiveCode(workspaceCode);
   }, [workspaceCode]);
 
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setLiveCode(workspaceCode);
-    if (iframeRef.current?.contentWindow) {
-      iframeRef.current.contentWindow.postMessage(
-        {
-          type: "rsc-embed:init",
-          code: workspaceCode,
-          showFullscreen: false,
-        },
-        "*",
-      );
-    }
-  }, [workspaceCode]);
+  const embedUrl = `embed.html?c=${encodeURIComponent(encodeCode(workspaceCode))}`;
 
   const handleSave = (): void => {
     saveToUrl(liveCode.server, liveCode.client);
@@ -325,7 +322,7 @@ export function App(): React.ReactElement {
         </div>
         <BuildSwitcher />
       </header>
-      <iframe ref={iframeRef} src="embed.html" style={{ flex: 1, border: "none", width: "100%" }} />
+      <iframe key={embedUrl} src={embedUrl} style={{ flex: 1, border: "none", width: "100%" }} />
       {showEmbedModal && <EmbedModal code={liveCode} onClose={() => setShowEmbedModal(false)} />}
     </>
   );
