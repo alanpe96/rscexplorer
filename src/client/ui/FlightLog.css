@@ -48,6 +48,12 @@
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .FlightLog-empty--waiting::after {
+    animation: none;
+  }
+}
+
 /* FlightLog-entry */
 
 .FlightLog-entry {
@@ -116,6 +122,11 @@
 .FlightLog-entry-deleteBtn:hover {
   opacity: 1;
   color: #e57373;
+}
+
+.FlightLog-entry-deleteBtn:focus-visible {
+  outline: 2px solid #ffd54f;
+  outline-offset: 2px;
 }
 
 .FlightLog-entry-request {
@@ -248,7 +259,7 @@
 
 .FlightLog-rawForm-textarea:focus {
   outline: none;
-  border-color: #555;
+  border-color: #ffd54f;
 }
 
 .FlightLog-rawForm-buttons {
@@ -272,6 +283,11 @@
   cursor: not-allowed;
 }
 
+.FlightLog-rawForm-submitBtn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
 .FlightLog-rawForm-cancelBtn {
   padding: 5px 12px;
   border-radius: 3px;
@@ -285,6 +301,11 @@
 .FlightLog-rawForm-cancelBtn:hover {
   border-color: #555;
   color: var(--text);
+}
+
+.FlightLog-rawForm-cancelBtn:focus-visible {
+  outline: 2px solid #ffd54f;
+  outline-offset: 2px;
 }
 
 /* FlightLog-addButton */
@@ -316,6 +337,11 @@
   background: #3a3a3a;
   border-color: #666;
   color: var(--text);
+}
+
+.FlightLog-addButton:focus-visible {
+  outline: 2px solid #ffd54f;
+  outline-offset: 2px;
 }
 
 /* Responsive */

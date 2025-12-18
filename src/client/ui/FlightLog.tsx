@@ -97,6 +97,7 @@ function FlightLogEntry({
               className="FlightLog-entry-deleteBtn"
               onClick={() => onDelete(index)}
               title="Delete"
+              aria-label="Delete entry"
             >
               ×
             </button>
@@ -195,7 +196,12 @@ export function FlightLog({
           </div>
         ) : (
           <div className="FlightLog-addButton-wrapper">
-            <button className="FlightLog-addButton" onClick={handleShowRawInput} title="Add action">
+            <button
+              className="FlightLog-addButton"
+              onClick={handleShowRawInput}
+              title="Add action"
+              aria-label="Add action"
+            >
               +
             </button>
           </div>

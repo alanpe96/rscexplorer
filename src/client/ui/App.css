@@ -47,6 +47,11 @@
   color: var(--text-bright);
 }
 
+.App-headerLink:focus-visible {
+  outline: 2px solid #ffd54f;
+  outline-offset: 2px;
+}
+
 /* App-exampleSelect */
 
 .App-exampleSelect {
@@ -91,6 +96,12 @@
 .App-exampleSelect-embedBtn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+.App-exampleSelect-saveBtn:focus-visible,
+.App-exampleSelect-embedBtn:focus-visible {
+  outline: none;
+  border-color: #ffd54f;
 }
 
 /* App-buildSwitcher */
@@ -168,6 +179,11 @@
   color: var(--text-bright);
 }
 
+.App-embedModal-closeBtn:focus-visible {
+  outline: 2px solid #ffd54f;
+  outline-offset: 2px;
+}
+
 .App-embedModal-body {
   padding: 16px;
   overflow: auto;
@@ -194,7 +210,7 @@
 
 .App-embedModal-textarea:focus {
   outline: none;
-  border-color: #555;
+  border-color: #ffd54f;
 }
 
 .App-embedModal-textarea::selection {
@@ -232,6 +248,11 @@
   color: var(--text-bright);
 }
 
+.App-embedModal-tab:focus-visible {
+  outline: 2px solid #ffd54f;
+  outline-offset: -2px;
+}
+
 .App-embedModal-footer {
   padding: 16px;
   border-top: 1px solid var(--border);
@@ -252,6 +273,11 @@
 
 .App-embedModal-copyBtn:hover {
   background: #ffe566;
+}
+
+.App-embedModal-copyBtn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
 }
 
 /* Responsive */

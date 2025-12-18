@@ -46,6 +46,11 @@
   cursor: not-allowed;
 }
 
+.LivePreview-controlBtn:focus-visible {
+  outline: 2px solid #ffd54f;
+  outline-offset: -2px;
+}
+
 .LivePreview-controlBtn--playing {
   color: #ffd54f;
 }
@@ -62,6 +67,11 @@
   animation: none;
 }
 
+.LivePreview-controlBtn--step:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
 .LivePreview-controlBtn--step:disabled {
   background: transparent;
   color: var(--text);
@@ -75,6 +85,12 @@
   }
   50% {
     opacity: 0.7;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .LivePreview-controlBtn--step {
+    animation: none;
   }
 }
 

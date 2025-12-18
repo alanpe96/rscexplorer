@@ -94,6 +94,7 @@ export function EmbedApp(): React.ReactElement {
             rel="noopener noreferrer"
             className="EmbedApp-fullscreenLink"
             title="Open in RSC Explorer"
+            aria-label="Open in RSC Explorer"
           >
             <svg
               width="14"
@@ -102,6 +103,7 @@ export function EmbedApp(): React.ReactElement {
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
+              aria-hidden="true"
             >
               <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" />
             </svg>
