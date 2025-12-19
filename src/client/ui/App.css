@@ -21,6 +21,34 @@
   white-space: nowrap;
 }
 
+.App-helpLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--border);
+  color: var(--text-dim);
+  font-size: 11px;
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    background 0.15s,
+    color 0.15s;
+  margin-left: -8px;
+}
+
+.App-helpLink:hover {
+  background: #444;
+  color: var(--text-bright);
+}
+
+.App-helpLink:focus-visible {
+  outline: 2px solid #ffd54f;
+  outline-offset: 2px;
+}
+
 .App-headerSpacer {
   flex: 1;
 }
@@ -303,6 +331,10 @@
 
   .App-title {
     display: none;
+  }
+
+  .App-helpLink {
+    margin-left: 0;
   }
 
   .App-exampleSelect {

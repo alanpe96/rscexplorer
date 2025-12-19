@@ -277,6 +277,16 @@ export function App(): React.ReactElement {
     <>
       <header className="App-header">
         <h1 className="App-title">RSC Explorer</h1>
+        <a
+          href="https://overreacted.io/introducing-rsc-explorer/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="App-helpLink"
+          title="What is this?"
+          aria-label="What is this?"
+        >
+          ?
+        </a>
         <div className="App-exampleSelect">
           <label className="App-exampleSelect-label">Example</label>
           <div className="App-exampleSelect-selectWrapper">
