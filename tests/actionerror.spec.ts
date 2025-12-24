@@ -82,9 +82,8 @@ test("action error - throwing action shows error in entry and clears pending sta
   const errorText = await errorEntry.innerText();
   expect(errorText).toContain("Action failed intentionally");
 
-  // The error propagates to the preview (no ErrorBoundary in the sample),
-  // so the preview will show the error message instead of the button.
-  // The key verification is that the error entry appears in the FlightLog.
+  // Verify preview shows error (no ErrorBoundary, so error propagates)
+  expect(await h.preview("Action failed intentionally")).toContain("Action failed intentionally");
 });
 
 test("action error - raw action with invalid payload shows error", async () => {
