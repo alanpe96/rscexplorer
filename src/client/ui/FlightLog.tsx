@@ -1,11 +1,19 @@
 import React, { useState, useRef, useEffect, useTransition } from "react";
 import { FlightTreeView } from "./TreeView.tsx";
 import { Select } from "./Select.tsx";
-import type { EntryView } from "../runtime/index.ts";
+import type { EntryView, RowView } from "../runtime/index.ts";
 import "./FlightLog.css";
 
-function escapeHtml(str: string): string {
-  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+function formatRow(row: RowView): React.ReactNode {
+  if (row.hexStart < 0) {
+    return row.display;
+  }
+  return (
+    <>
+      {row.display.slice(0, row.hexStart)}
+      <span className="FlightLog-hexBytes">{row.display.slice(row.hexStart)}</span>
+    </>
+  );
 }
 
 type RenderLogViewProps = {
@@ -42,7 +50,7 @@ function RenderLogView({ entry, cursor }: RenderLogViewProps): React.ReactElemen
       <div className="FlightLog-renderView-split">
         <div className="FlightLog-linesWrapper">
           <pre className="FlightLog-lines">
-            {rows.map((line, i) => {
+            {rows.map((row, i) => {
               const isCurrent = i === nextLineIndex;
               return (
                 <span
@@ -52,7 +60,7 @@ function RenderLogView({ entry, cursor }: RenderLogViewProps): React.ReactElemen
                   data-testid="flight-line"
                   aria-current={isCurrent ? "step" : undefined}
                 >
-                  {escapeHtml(line)}
+                  {formatRow(row)}
                 </span>
               );
             })}

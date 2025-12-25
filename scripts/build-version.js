@@ -7,9 +7,9 @@ import ALL_VERSIONS from "./versions.json" with { type: "json" };
 
 const REACT_PACKAGES = ["react", "react-dom", "react-server-dom-webpack"];
 
-function run(cmd, opts = {}) {
+function run(cmd) {
   console.log(`\n> ${cmd}`);
-  execSync(cmd, { stdio: "inherit", ...opts });
+  execSync(cmd, { stdio: "inherit" });
 }
 
 function getLatestVersion() {
@@ -22,12 +22,18 @@ function installReactVersion(version) {
   run(`npm install ${packages} --no-save`);
 }
 
+function testVersion(version) {
+  console.log(`\n--- Running tests for React ${version} ---`);
+  run("npm test");
+}
+
 function buildForVersion(version, outDir) {
   console.log(`\n========================================`);
   console.log(`Building React ${version} (dev + prod) → ${outDir || `dist/${version}`}`);
   console.log(`========================================`);
 
   installReactVersion(version);
+  testVersion(version);
 
   const dir = outDir || `dist/${version}`;
   // Base path for assets (e.g., /19.1.0/ or / for root)

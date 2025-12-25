@@ -4,11 +4,16 @@ type InternalEntry =
   | { type: "render"; stream: SteppableStream }
   | { type: "action"; name: string; args: string; stream: SteppableStream };
 
+export type RowView = {
+  display: string;
+  hexStart: number;
+};
+
 export type EntryView = {
   type: "render" | "action";
   name?: string;
   args?: string;
-  rows: readonly string[];
+  rows: readonly RowView[];
   flightPromise: Thenable<unknown> | undefined;
   error: Error | null;
   chunkStart: number;
@@ -58,7 +63,7 @@ export class Timeline {
       const chunkCount = stream.rows.length;
       const chunkEnd = chunkStart + chunkCount;
       const base = {
-        rows: stream.rows,
+        rows: stream.rows.map((r) => ({ display: r.display, hexStart: r.hexStart })),
         flightPromise: stream.flightPromise,
         error: stream.error,
         chunkStart,

@@ -237,6 +237,10 @@
   opacity: 0.4;
 }
 
+.FlightLog-hexBytes {
+  opacity: 0.7;
+}
+
 .FlightLog-tree {
   flex: 1;
   min-width: 0;

@@ -25,6 +25,7 @@ Read [Introducing RSC Explorer](https://overreacted.io/introducing-rsc-explorer/
 - [Error Handling](https://rscexplorer.dev/?s=errors)
 - [Client Reference](https://rscexplorer.dev/?s=clientref)
 - [Bound Actions](https://rscexplorer.dev/?s=bound)
+- [Binary Data](https://rscexplorer.dev/?s=binary)
 - [Kitchen Sink](https://rscexplorer.dev/?s=kitchensink)
 - [CVE-2025-55182](https://rscexplorer.dev/?s=cve)
 
@@ -39,7 +40,7 @@ Key design decisions to keep in mind:
 - The Server part runs in a worker.
 - We try to approximate a real RSC environment as much as we can (while staying in browser).
 - No dependencies on React internals. We use `react-server-dom-webpack` and shim the Webpack runtime.
-- No dependencies on the protocol format. We display it, but treat it as an implementation detail of React.
+- Minimal dependencies on the protocol format. We break the stream into rows, but treat them as an implementation detail of React.
 - Only end-to-end tests.
 
 This is fully vibecoded but heavily steered so individual pieces may be weird or suboptimal.

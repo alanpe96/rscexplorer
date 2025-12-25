@@ -231,6 +231,9 @@ function JSXValue({ value, indent = 0, ancestors = [] }: JSXValueProps): React.R
     );
   }
 
+  if (value instanceof DataView) {
+    return <span className="TreeView-collection">DataView({value.byteLength} bytes)</span>;
+  }
   if (ArrayBuffer.isView(value)) {
     const name = value.constructor.name;
     const arr = value as Uint8Array;

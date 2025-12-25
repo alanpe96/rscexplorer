@@ -74,6 +74,11 @@ test("kitchensink sample - renders all RSC protocol types", async () => {
               bigint: 12345678901234567890n,
               symbol: Symbol(mySymbol)
             },
+            binary: {
+              uint8: Uint8Array(5) [1, 2, 3, 4, 5],
+              int32: Int32Array(3) [-1, 0, 2147483647],
+              float64: Float64Array(2) [3.14159, 2.71828]
+            },
             collections: {
               map: Map(2) {
                 "a" => 1,
@@ -175,6 +180,11 @@ test("kitchensink sample - renders all RSC protocol types", async () => {
               bigint: 12345678901234567890n,
               symbol: Symbol(mySymbol)
             },
+            binary: {
+              uint8: Uint8Array(5) [1, 2, 3, 4, 5],
+              int32: Int32Array(3) [-1, 0, 2147483647],
+              float64: Float64Array(2) [3.14159, 2.71828]
+            },
             collections: {
               map: Map(2) {
                 "a" => 1,
@@ -262,6 +272,10 @@ test("kitchensink sample - renders all RSC protocol types", async () => {
     date: 2024-01-15T12:00:00.000Z
     bigint: 12345678901234567890n
     symbol: Symbol(mySymbol)
+    binary
+    uint8: Uint8Array(5)
+    int32: Int32Array(3)
+    float64: Float64Array(2)
     collections
     map: Map(2)
     set: Set(3)

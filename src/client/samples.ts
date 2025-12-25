@@ -417,10 +417,64 @@ export function Greeter({ action }) {
   )
 }`,
   },
+  binary: {
+    name: "Binary Data",
+    server: `import { BinaryDisplay } from './client'
+
+export default function App() {
+  const buffer = new ArrayBuffer(4)
+  new Uint8Array(buffer).set([0xCA, 0xFE, 0xBA, 0xBE])
+
+  return (
+    <div>
+      <h1>Binary Data</h1>
+      <BinaryDisplay
+        arrayBuffer={buffer}
+        int8={new Int8Array([0x7F, -1, -128])}
+        uint8={new Uint8Array([0xDE, 0xAD, 0xBE, 0xEF])}
+        uint8Clamped={new Uint8ClampedArray([0, 128, 255])}
+        int16={new Int16Array([0x7FFF, -1])}
+        uint16={new Uint16Array([0xFFFF, 0x1234])}
+        int32={new Int32Array([0x12345678, -1])}
+        uint32={new Uint32Array([0xDEADBEEF])}
+        float32={new Float32Array([Math.PI])}
+        float64={new Float64Array([Math.PI])}
+        bigInt64={new BigInt64Array([0x123456789ABCDEFn, -1n])}
+        bigUint64={new BigUint64Array([0xFEDCBA9876543210n])}
+        dataView={new DataView(buffer)}
+      />
+    </div>
+  )
+}`,
+    client: `'use client'
+
+function formatBytes(arr) {
+  return Array.from(new Uint8Array(arr.buffer || arr)).map(b => '0x' + b.toString(16).padStart(2, '0')).join(', ')
+}
+
+export function BinaryDisplay(props) {
+  return (
+    <div style={{ fontSize: 12, fontFamily: 'monospace' }}>
+      <div>ArrayBuffer: [{formatBytes(props.arrayBuffer)}]</div>
+      <div>Int8Array: [{props.int8.join(', ')}]</div>
+      <div>Uint8Array: [{formatBytes(props.uint8)}]</div>
+      <div>Uint8ClampedArray: [{props.uint8Clamped.join(', ')}]</div>
+      <div>Int16Array: [{props.int16.join(', ')}]</div>
+      <div>Uint16Array: [{props.uint16.join(', ')}]</div>
+      <div>Int32Array: [{props.int32.map(n => '0x' + (n >>> 0).toString(16)).join(', ')}]</div>
+      <div>Uint32Array: [{props.uint32.map(n => '0x' + n.toString(16)).join(', ')}]</div>
+      <div>Float32Array: [{props.float32.join(', ')}]</div>
+      <div>Float64Array: [{props.float64.join(', ')}]</div>
+      <div>BigInt64Array: [{props.bigInt64.map(n => n.toString()).join(', ')}]</div>
+      <div>BigUint64Array: [{props.bigUint64.map(n => '0x' + n.toString(16)).join(', ')}]</div>
+      <div>DataView: [{formatBytes(props.dataView)}]</div>
+    </div>
+  )
+}`,
+  },
   kitchensink: {
     name: "Kitchen Sink",
-    server: `// Kitchen Sink - All RSC Protocol Types
-import { Suspense } from 'react'
+    server: `import { Suspense } from 'react'
 import { DataDisplay } from './client'
 
 export default function App() {
@@ -465,6 +519,13 @@ async function AllTypes() {
       date: new Date("2024-01-15T12:00:00.000Z"),
       bigint: BigInt("12345678901234567890"),
       symbol: Symbol.for("mySymbol"),
+    },
+
+    // Binary / TypedArrays
+    binary: {
+      uint8: new Uint8Array([1, 2, 3, 4, 5]),
+      int32: new Int32Array([-1, 0, 2147483647]),
+      float64: new Float64Array([3.14159, 2.71828]),
     },
 
     // Collections
@@ -573,6 +634,8 @@ function renderValue(v) {
   if (v instanceof Set) return 'Set(' + v.size + ')'
   if (v instanceof FormData) return 'FormData'
   if (v instanceof Blob) return 'Blob(' + v.size + ')'
+  if (v instanceof ArrayBuffer) return 'ArrayBuffer(' + v.byteLength + ')'
+  if (ArrayBuffer.isView(v)) return v.constructor.name + '(' + v.length + ')'
   if (Array.isArray(v)) return '[' + v.length + ' items]'
   if (typeof v === 'object') return '{...}'
   return String(v)
